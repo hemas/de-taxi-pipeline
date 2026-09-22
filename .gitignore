@@ -1,0 +1,21 @@
+# Credentials — NEVER commit
+gcp-key.json
+setenv.sh
+*.json
+.aws/
+*.pem
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Spark / data outputs
+out_agg/
+*.csv
+*.parquet
+_SUCCESS
+.crc
+
+# OS
+.DS_Store
