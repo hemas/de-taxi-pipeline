@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.window import Window
 from pyspark.sql import functions as F
 from pyspark.sql.functions import row_number, col
+import boto3
 
 spark = (SparkSession.builder.appName("day1-clean")
     .config("spark.jars.packages", "org.apache.hadoop:hadoop-aws:3.4.1")
@@ -45,4 +46,16 @@ print("Rows after deduplication:", clean.count())
     .parquet(f"s3a://{BUCKET}/clean/"))
 
 print(f"Cleaned data written to s3a://{BUCKET}/clean/")
+
+
+QUEUE_URL = "https://queue.amazonaws.com/629255175421/de-taxi-pipeline-events"
+
+sqs = boto3.client("sqs", region_name="us-east-1")
+sqs.send_message(
+    QueueUrl=QUEUE_URL,
+    MessageBody="Cleaned data written to S3"
+)
+
+print("Published 'clean stage complete' to SQS")
+
 spark.stop()
